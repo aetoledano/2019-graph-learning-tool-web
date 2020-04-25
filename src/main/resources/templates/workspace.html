@@ -1,0 +1,264 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" style="height: 100%;">
+<head th:replace="~{fragments :: metadata}"></head>
+
+<body style="height: 100%; overflow: hidden;">
+
+<div th:replace="~{fragments :: sigma_include}"></div>
+
+<div class="row" style="padding: 6px; height: 100%;">
+    <div class="col-sm-2">
+
+        <div class="card">
+            <h4 class="card-header">
+                <a th:href="@{/}">
+                    <i class="fas fa-home"></i>
+                    Graph Tool
+                </a>
+                <a style="float: right;"
+                   data-toggle="tooltip"
+                   data-placement="right"
+                   title="New project"
+                   th:href="@{/project}"
+                >
+                    <i class="fas fa-file-alt"></i>
+                </a>
+            </h4>
+            <div class="card-body">
+
+                <button type="button" class="btn btn-sm btn-outline-primary btn-block" data-toggle="button"
+                        aria-pressed="false"
+                        autocomplete="off" onclick="runForceAtlas2()">
+                    <i class="fas fa-project-diagram"></i>
+                    Run ForceAtlas2
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-primary btn-block"
+                        onclick="nodeDegreeToSize()">
+                    <i class="fas fa-circle"></i>
+                    Run Degree2size
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-primary btn-block" style="display: none;"
+                        onclick="startNoverlapLayout()">
+                    <i class="fas fa-project-diagram"></i>
+                    Run Noverlap plugin
+                </button>
+
+                <div style="margin-top: 10px">
+                    <hr class="my-1">
+                    <h5>Graph options</h5>
+
+                    <label for="curved_arrows_mode" style="display: block;">
+                        <input type="checkbox" id="curved_arrows_mode" onchange="updateEdgesKind()">
+                        Curved edges
+                    </label>
+
+                    <label for="directed_graph_mode" style="display: block;">
+                        <input type="checkbox" id="directed_graph_mode" onchange="updateGraphType()">
+                        Directed graph
+                    </label>
+
+                    <label for="weighted_graph_mode" style="display: block;">
+                        <input type="checkbox" id="weighted_graph_mode" onchange="updateEdgesLabels()">
+                        Weighted edges
+                    </label>
+
+                    <div class="input-group input-group-sm mb-3" style="margin-top: 5px;">
+                        <div class="input-group-prepend">
+                            <button type="button" class="btn btn-outline-primary"
+                                    onclick="generateRandomGraph($('#generator_nodes_amt').val())">
+                                <i class="fas fa-random"></i>
+                                Random graph
+                            </button>
+                        </div>
+                        <input type="number" min="1" max="30" class="form-control" id="generator_nodes_amt"
+                               placeholder="Nodes">
+                    </div>
+                </div>
+                <!--BEGIN algorithm selection area-->
+                <div style="margin-top: 10px; margin-bottom: 10px;">
+                    <hr class="my-1">
+                    <h5>Graph algorithms</h5>
+
+                    <div class="btn-group btn-group-sm" role="group"
+                         aria-label="Button group with nested dropdown">
+                        <button type="button" class="btn btn-outline-primary" id="runnerStarterBtn"
+                                onclick="AlgorithmProxy.onRunClick()">
+                            <i class="fas fa-play"></i>
+                            Run
+                        </button>
+
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button id="btnGroupDrop1" type="button"
+                                    class="btn btn-outline-primary dropdown-toggle"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Select algorithm
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                <button class="dropdown-item" onclick="AlgorithmProxy.setDijkstra()">Dijkstra</button>
+                                <button class="dropdown-item" onclick="AlgorithmProxy.setPrim()">Prim</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--END algorithm selection area-->
+
+                <!--BEGIN algorithm runner controls area-->
+                <div style="display: none;" id="algorithmRunnerControlsArea">
+                    <hr class="my-1">
+                    <h5>Algorithm Runner</h5>
+
+                    <div>
+                        <label for="runner_mode_automatic" style="display: block;">
+                            <input type="checkbox" id="runner_mode_automatic" onchange="AlgorithmProxy.onChangeMode()">
+                            Automatic mode
+                        </label>
+
+                        <button class="btn btn-outline-primary btn-sm" onclick="AlgorithmProxy.onPlayClick()">
+                            <i class="fas fa-play"></i>
+                        </button>
+
+                        <button class="btn btn-outline-primary btn-sm" onclick="AlgorithmProxy.onPauseClick()">
+                            <i class="fas fa-pause"></i>
+                        </button>
+
+                        <button class="btn btn-outline-danger btn-sm" onclick="AlgorithmProxy.onStopClick()">
+                            <i class="fas fa-stop"></i>
+                        </button>
+
+                        <!--<button class="btn btn-outline-primary btn-sm">-->
+                        <!--<i class="fas fa-step-backward"></i>-->
+                        <!--</button>-->
+
+                        <button class="btn btn-outline-primary btn-sm" onclick="AlgorithmProxy.onNextStepClick()">
+                            <i class="fas fa-step-forward"></i>
+                        </button>
+                    </div>
+
+                    <div style="margin-top: 10px;">
+                        <span class='alert-link' id="algoInfoAlgorithmName">
+                                Algorithm name
+                        </span>
+                        <p id="algoInfoAlgorithmDescription">
+                            Algorithm description
+                        </p>
+                    </div>
+                </div>
+                <!--END algorithm runner controls area-->
+
+            </div>
+        </div>
+
+        <div id="alerts_area">
+            <div th:replace="~{fragments :: server_alerts}"></div>
+        </div>
+
+    </div>
+    <div class="col-sm-10" style="height: 100%;">
+        <div class="card" style="height: 100%;">
+
+            <h4 class="card-header">
+                <div class="text-left">
+                    <span th:text="${p}?  'Workspace - '+ ${p.getName()}: 'Workspace'"></span>
+                    <input id="hiddenProjectName" type="hidden" th:value="${p}? ${p.getName()}"/>
+
+                    <div class="btn-group btn-group-sm" role="group" style="float: right;">
+
+                        <label for="saveBtn" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save
+                            <button id="saveBtn" style="display: none;"
+                                    th:onclick=" 'save_wrapper(\'' + (${p}? ${p.getUuid()}) +'\')' ">
+                            </button>
+                        </label>
+
+                        <label for="loadJsonInput" class="btn btn-secondary">
+                            <i class="fas fa-file-import"></i> from JSON
+                            <form style="display: none;"
+                                  id="loadJsonInputForm"
+                                  enctype="multipart/form-data"
+                                  method="post">
+                                <input type="file" name="file"
+                                       id="loadJsonInput"
+                                       onchange="return loadExternalFile(document.getElementById('loadJsonInputForm'),'json')">
+                            </form>
+                        </label>
+
+                        <label for="loadGexfInput" class="btn btn-secondary">
+                            <i class="fas fa-file-import"></i> from GEXF
+                            <form style="display: none;"
+                                  id="loadGexfInputForm"
+                                  enctype="multipart/form-data"
+                                  method="post">
+                                <input type="file" name="file"
+                                       id="loadGexfInput"
+                                       style="display: none;"
+                                       onchange="return loadExternalFile(document.getElementById('loadGexfInputForm'),'gexf')">
+                            </form>
+                        </label>
+
+                        <label for="pngExport" class="btn btn-secondary">
+                            <i class="fas fa-file-export"></i> to PNG
+                            <button id="pngExport" style="display: none;"
+                                    th:onclick="'snapshot_(\''+(${p}? ${p.getName()})+'\')'">
+                            </button>
+                        </label>
+
+                        <label for="svgExport" class="btn btn-secondary">
+                            <i class="fas fa-file-export"></i> to SVG
+                            <button id="svgExport" style="display: none;"
+                                    th:onclick="'export_(\''+(${p}? ${p.getName()})+'\')'">
+                            </button>
+                        </label>
+
+                        <label for="cleanWorkspaceBtn" class="btn btn-warning">
+                            <i class="fas fa-eraser"></i> Clear
+                            <button id="cleanWorkspaceBtn" style="display: none;"
+                                    onclick="clean_workspace()">
+                            </button>
+                        </label>
+
+                        <label for="closeProject" class="btn btn-danger">
+                            <i class="fas fa-window-close"></i> Close
+                            <button id="closeProject" style="display: none;" onclick="window.location.href='/';">
+                            </button>
+                        </label>
+
+                    </div>
+                </div>
+            </h4>
+
+            <div class=" card-body" style="height: 100%; padding: 1px;">
+                <div id="graph-container" style="height: 100%;"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{modals :: projectName}"></div>
+
+<script th:src="@{/js/graph-tool.js}"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function () {
+        g = /*[[${p}? ${p.getGraph()}:null]]*/undefined;
+        c = /*[[${p}? ${p.getCam()}:null]]*/undefined;
+        state = /*[[${p}? ${p.getState()}:null]]*/undefined;
+        if (state) {
+            state = JSON.parse(state);
+            for (let key in state) {
+                document.getElementById(key).checked = state[key];
+            }
+        }
+        if (g && c) {
+            g = JSON.parse(g);
+            c = JSON.parse(c);
+            newSigmaInstance(g, c, true);
+        } else {
+            newSigmaInstance(undefined, undefined, true);
+        }
+    });
+    /*]]>*/
+</script>
+
+</body>
+</html>

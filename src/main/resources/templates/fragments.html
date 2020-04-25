@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="metadata">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <title>Graph Tool</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/all.min.css}"/>
+
+    <!-- Bootstrap core JS + jQuery + Popper -->
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+
+</head>
+
+<body>
+
+<div th:fragment="sigma_include">
+    <!--algorithms-->
+    <script th:src="@{/js/datastructure.js}"></script>
+    <script th:src="@{/js/algorithms.js}"></script>
+
+    <!--JS utils-->
+    <script th:src="@{/js/client.side.download.js}"></script>
+    <script th:src="@{/js/bootbox.all.min.js}"></script>
+
+    <!-- SIGMA CORE-->
+    <script th:src="@{/js/sigma-1.2.1/sigma.min.js}"></script>
+    <script th:src="@{/js/sigma-1.2.1/sigma.plugins.dragNodes.min.js}"></script>
+    <script th:src="@{/js/sigma-1.2.1/sigma.renderers.edgeLabels.min.js}"></script>
+    <script th:src="@{/js/sigma-1.2.1/sigma.renderers.parallelEdges.min.js}"></script>
+    <script th:src="@{/js/sigma-1.2.1/sigma.plugins.relativeSize.min.js}"></script>
+
+    <!-- SIGMA UTILS-->
+    <script th:src="@{/js/sigma-1.2.1/sigma.exporters.svg.min.js}"></script>
+    <script th:src="@{/js/sigma-1.2.1/sigma.renderers.snapshot.min.js}"></script>
+
+    <script th:src="@{/js/sigma-1.2.1/sigma.layout.forceAtlas2.min.js}"></script>
+    <script th:src="@{/js/sigma-1.2.1/sigma.plugins.animate.min.js}"></script>
+    <script th:src="@{/js/sigma-1.2.1/sigma.layout.noverlap.min.js}"></script>
+
+    <script th:src="@{/js/sigma-1.2.1/sigma.parsers.json.min.js}"></script>
+    <script th:src="@{/js/sigma-1.2.1/sigma.parsers.gexf.min.js}"></script>
+
+</div>
+
+<div th:fragment="server_alerts" th:if="${flash}"
+     th:class="'alert alert-'+${flash.type}+' alert-dismissible fade show'"
+     role="alert"
+     style="margin-top: 20px;"
+>
+    <div th:utext="${flash.msg}"></div>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+</body>
+</html>

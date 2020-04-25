@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: metadata}"></head>
+
+<body style="padding-top: 20px">
+
+<div class="container">
+    <!-- Content here -->
+
+    <div id="alerts_area">
+        <div th:replace="~{fragments :: server_alerts}"></div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-sm-4">
+            <div class="page-header">
+                <h2>
+                    Graph Tool
+                </h2>
+            </div>
+            <div>
+                <a th:href="@{/project}" class="btn btn-primary btn-lg btn-block">
+                    <i class="fas fa-file-alt"></i>
+                    Create new project
+                </a>
+
+
+                <label for="fileUploadInput" class="btn btn-primary btn-lg btn-block">
+                    <i class="fas fa-upload"></i> Load project from file
+                    <form id="uploadForm"
+                          style="display: none;"
+                          method="post"
+                          enctype="multipart/form-data"
+                          th:action="@{/project/upload}">
+                        <input type="file" name="file" id="fileUploadInput" onchange="return uploadSubmit()">
+                    </form>
+
+                </label>
+
+                <script>
+                    function uploadSubmit() {
+                        document.getElementById("uploadForm").submit();
+                    }
+                </script>
+
+            </div>
+
+
+        </div>
+
+        <div class="col-sm-8">
+            <div class="page-header">
+                <h2>
+                    <i class="fas fa-user-clock"></i>
+                    Recent projects
+                </h2>
+            </div>
+
+            <ul th:if="${!projects.isEmpty()}" class="list-group">
+                <a th:each="pair: ${projects}" th:href="@{/project/{uuid}(uuid=${pair.key})}"
+                   class="list-group-item list-group-item-action list-group-item-light">
+                    <i class="fas fa-project-diagram"></i>
+                    <span th:text="${pair.value}"></span>
+
+
+                    <span style="float: right; margin-left: 10px;"
+                          th:onclick="'return rmSubmit(\''+${pair.key}+'\')'"
+                          data-toggle="tooltip"
+                          data-placement="right"
+                          title="Delete">
+                        <i class="fas fa-trash-alt"></i>
+                    </span>
+                    <form style="display: none;"
+                          method="POST"
+                          th:id="'rmform-'+${pair.key}"
+                          th:action="@{/project/{uuid}/rm(uuid=${pair.key})}"></form>
+
+                    <span style="float: right; margin-left: 10px;"
+                          th:onclick="'return dlSubmit(\''+${pair.key}+'\')'"
+                          data-toggle="tooltip"
+                          data-placement="right"
+                          title="Download">
+                        <i class="fas fa-file-download"></i>
+                        </span>
+                    <form style="display: none;"
+                          method="GET"
+                          th:id="'dlform-'+${pair.key}"
+                          th:action="@{/project/{uuid}/dl(uuid=${pair.key})}">
+                        <input type="hidden" name="pname" th:value="${pair.value}">
+                    </form>
+                </a>
+                <script>
+                    function rmSubmit(uuid) {
+                        document.getElementById('rmform-' + uuid).submit();
+                        return false;
+                    }
+
+                    function dlSubmit(uuid) {
+                        document.getElementById('dlform-' + uuid).submit();
+                        return false;
+                    }
+                </script>
+            </ul>
+            
+            <div th:if="${projects.isEmpty()}" class="alert alert-warning" role="alert">
+                <i class="fas fa-surprise"></i>
+                No recent projects found. Create new project <a th:href="@{/project}" class="alert-link">here</a>.
+            </div>
+
+        </div>
+    </div>
+    <!--end content-->
+</div>
+
+</body>
+
+</html>

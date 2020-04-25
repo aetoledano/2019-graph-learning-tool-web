@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Modal -->
+<div th:fragment="projectName" class="modal fade" id="project_name_modal" tabindex="-1" role="dialog"
+     aria-labelledby="project_name_modal_Label"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="project_name_modal_Label">
+                    Type project name
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">
+                            <i class="fas fa-project-diagram"></i>
+                        </span>
+                    </div>
+                    <input id="projectNameInput" type="text" class="form-control" placeholder="Project name goes here"
+                           aria-label="Username" aria-describedby="basic-addon1">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" style="float: left;" class="btn btn-warning" data-dismiss="modal">
+                    <i class="fas fa-times-circle"></i>
+                    Cancel
+                </button>
+                <button type="button" style="float: right;" class="btn btn-primary" onclick="onOk()">
+                    <i class="fas fa-check-circle"></i>
+                    Ok
+                </button>
+                <script>
+                    function onOk() {
+                        if (AlgorithmProxy.isRunnerActive()) return;
+
+                        pname = $('#projectNameInput').val().trim();
+                        if (pname.length > 0)
+                            save(undefined, pname);
+                    }
+                </script>
+            </div>
+        </div>
+    </div>
+
+    <div style="display: none;" id="saveFormDiv"></div>
+
+</div>
+
+</body>
+</html>
