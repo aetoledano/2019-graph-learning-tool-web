@@ -10,7 +10,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath "io.freefair.gradle:lombok-plugin:3.5.1"
+        classpath "io.freefair.gradle:lombok-plugin:6.3.0"
     }
 }
 
